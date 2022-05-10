@@ -13,16 +13,16 @@ Laaravel >= 7
 Add this repository:
 
 ```
-composer config repositories.rafael-magno/laravel-api-crud-generator git https://github.com/rafael-magno/laravel-api-crud-generator
+composer config repositories.giangmv/calving-tiger git https://github.com/hoanggiang333889/calving-tiger
 ```
 
 Install package:
 
-`composer require rafael-magno/laravel-api-crud-generator`
+`composer require giangmv/calving-tiger`
 
 ## Usage
 
-`php artisan make:crud`
+`php artisan api:crud`
 
 ## Publish config
 
