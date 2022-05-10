@@ -1,0 +1,42 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Repositories\BaseRepository;
+use {{ namespaceModel }}\{{ model|studly }};
+
+class {{ model|studly }}Repository extends BaseRepository
+{
+    /**
+     * Initializing the instances and variables
+     *
+     * @param Model ${{ model|lower }}
+     * @return {{ model|studly }}Repository
+     */
+    public function __construct({{ model|studly }} ${{ model|lower }})
+    {
+        $this->model = ${{ model|lower }};
+    }
+
+    /**
+     * Search
+     *
+     * @param  mixed $query  Query.
+     * @param  mixed $column Column.
+     * @param  mixed $data   Data.
+     *
+     * @return mixed
+     */
+    public function mergeQuery($query, $column, $data)
+    {
+        switch ($column) {
+    {% for field in fields %}
+            case '{{ field }}':
+            return $query->where($column, $data);
+    {% endfor %}
+            default:
+                return $query;
+        }
+    }
+}
+

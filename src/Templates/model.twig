@@ -1,0 +1,20 @@
+<?php
+namespace {{ namespace }};
+
+use App\Models\BaseModel;
+
+class {{ table|singularStudly }} extends BaseModel
+{
+    protected $fillable = [
+{% for field in fields %}
+        '{{ field }}',
+{% endfor %}
+    ];
+
+
+    public $selectable = [
+        '*',
+    ];
+
+    public $sortable = [];
+}

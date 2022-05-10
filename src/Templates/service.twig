@@ -1,0 +1,42 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Services\BaseService;
+use {{ namespaceModel }}\{{ model|studly }};
+use {{ namespaceRepository }}\{{ model|studly }}Repository;
+use Illuminate\Support\Facades\Log;
+
+class {{ model|studly }}Service extends BaseService
+{
+    /**
+     * Initializing the instances and variables
+     *
+     * @param {{ model|studly }}Repository ${{ model|lower }}Repository
+     */
+    public function __construct({{ model|studly }}Repository ${{ model|lower }}Repository)
+    {
+        $this->repository = ${{ model|lower }}Repository;
+    }
+    /**
+     * Get list.
+     *
+     * @param  mixed $conditions
+     *
+     * @return  Collection $entities
+     */
+    public function list{{ model|studly }}($params)
+    {
+        return $this->list($params);
+    }
+
+    /**
+     * @param {{ model|studly }} ${{ model|lower }}
+     *
+     * @return void
+     */
+    public function delete(${{ model|lower }})
+    {
+        return $this->repository->delete(${{ model|lower }});
+    }
+}

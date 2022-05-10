@@ -1,0 +1,261 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
+use {{ namespaceModel }}\{{ model|studly }};
+use {{ namespaceService }}\{{ model|studly }}Service;
+use {{ namespaceCreateRequest }}\Create{{ model|studly }}Request;
+use {{ namespaceUpdateRequest }}\Update{{ model|studly }}Request;
+use {{ namespaceResource }}\{{ model|studly }}Resource;
+
+/**
+ *  @OA\Tag(
+ *      name="{{ model|lower }}",
+ *      description="{{ model|studly }} Resource",
+ * )
+ *
+ *  @OA\Schema(
+ *      schema="{{ model|studly }}",
+{% for field in fields %}
+ *      @OA\Property(
+ *          property="{{ field }}",
+ *          type="number",
+ *          example=1,
+ *      ),
+{% endfor %}
+ *  )
+ */
+class {{ model|studly }}Controller extends Controller
+{
+    /**
+     * @var  App\Services\{{ model|studly }}Service {{ model|studly }}Service
+     */
+    protected ${{ model|lower }}Service;
+
+    public function __construct({{ model|studly }}Service ${{ model|lower }}Service)
+    {
+        // Check permission
+        // $this->middleware('permission:{{ model|lower }}.show', ['only' => ['show']]);
+        // $this->middleware('permission:{{ model|lower }}.store', ['only' => ['create', 'store']]);
+        // $this->middleware('permission:{{ model|lower }}.update', ['only' => ['edit', 'update']]);
+        // $this->middleware('permission:{{ model|lower }}.destroy', ['only' => ['destroy']]);
+
+        $this->{{ model|lower }}Service = ${{ model|lower }}Service;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  \Illuminate\Http\Response
+     *
+     *  @OA\Get(
+     *      path="/api/{{ model|lower }}",
+     *      tags={"{{ model|studly }}"},
+     *      operationId="index{{ model|studly }}",
+     *      summary="List {{ model|studly }}",
+     *      @OA\Parameter(ref="#/components/parameters/page"),
+     *      @OA\Parameter(ref="#/components/parameters/limit"),
+     *      @OA\Parameter(ref="#/components/parameters/sort"),
+     *      @OA\Parameter(ref="#/components/parameters/sortType"),
+     *      @OA\Parameter(ref="#/components/parameters/condition"),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Listed",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(ref="#/components/schemas/{{ model|lower }}")
+     *              ),
+     *              @OA\Property(
+     *                  property="meta",
+     *                  ref="#/components/schemas/meta"
+     *              ),
+     *              @OA\Property(
+     *                  property="links",
+     *                  ref="#/components/schemas/links"
+     *              ),
+     *          ),
+     *      ),
+     *  )
+     */
+    public function index(Request $request)
+    {
+        $params = $request->all();
+        ${{ model|lower }} = $this->{{ model|lower }}Service->list{{ model|studly }}($params);
+        $result = {{ model|studly }}Resource::collection(${{ model|lower }});
+
+        return response()->success(self::INDEX, $result);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\{{ model|studly }}Request $request
+     * @return  \Illuminate\Http\Response
+     *
+     * @param  Request $request
+     * @return  Response
+     *
+     *  @OA\Post(
+     *      path="/api/{{ model|lower }}",
+     *      tags={"{{ model|studly }}"},
+     *      operationId="store{{ model|studly }}",
+     *      summary="Create {{ model|studly }}",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/{{ model|lower }}"),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Created",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  ref="#/components/schemas/{{ model|lower }}",
+     *              ),
+     *          ),
+     *      ),
+     *  )
+     */
+    public function store(Create{{ model|studly }}Request $request, {{ model|studly }} ${{ model|lower }})
+    {
+        try {
+            $params = $request->all();
+            ${{ model|lower }} = $this->{{ model|lower }}Service->create($params);
+            $result = new {{ model|studly }}Resource(${{ model|lower }});
+
+            return response()->success(self::STORE, $result);
+        } catch (\Exception $e) {
+            return response()->failure(self::STORE, $e->getMessage(), self::CODE_ERROR_400);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\{{ model|studly }}  ${{ model|lower }}
+     * @return  \Illuminate\Http\Response
+     *
+     *  @OA\Get(
+     *      path="/api/{{ model|lower }}/{id}",
+     *      tags={"{{ model|studly }}"},
+     *      operationId="show{{ model|studly }}",
+     *      summary="Get {{ model|studly }}",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *              format="int64",
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Getted",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  ref="#/components/schemas/{{ model|lower }}",
+     *              ),
+     *          ),
+     *      ),
+     *  )
+     */
+    public function show({{ model|studly }} ${{ model|lower }})
+    {
+        ${{ model|lower }} = $this->{{ model|lower }}Service->detail(${{ model|lower }});
+        $result = new {{ model|studly }}Resource(${{ model|lower }});
+
+        return response()->success(self::STORE, $result);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\{{ model|studly }}Request $request
+     * @param  \App\Models\{{ model|studly }}  ${{ model|lower }}
+     * @return  \Illuminate\Http\Response
+     *
+     *  @OA\Put(
+     *      path="/api/{{ model|lower }}/{id}",
+     *      tags={"{{ model|studly }}"},
+     *      operationId="update{{ model|studly }}",
+     *      summary="Update {{ model|studly }}",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *              format="int64",
+     *          ),
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/{{ model|lower }}"),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Updated",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="data",
+     *                  ref="#/components/schemas/{{ model|lower }}",
+     *              ),
+     *          ),
+     *      ),
+     *  )
+     */
+    public function update(Update{{ model|studly }}Request $request, {{ model|studly }} ${{ model|lower }})
+    {
+        try {
+            $params = $request->all();
+            $this->{{ model|lower }}Service->update(${{ model|lower }}, $params);
+            $result = new {{ model|studly }}Resource(${{ model|lower }});
+
+            return response()->success(self::UPDATE, $result);
+        } catch (\Exception $e) {
+            return response()->failure(self::UPDATE, $e->getMessage(), self::CODE_ERROR_400);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\{{ model|studly }}  ${{ model|lower }}
+     * @return  \Illuminate\Http\Response
+     *
+     *  @OA\Delete(
+     *      path="/api/{{ model|lower }}/{id}",
+     *      tags={"{{ model|studly }}"},
+     *      operationId="delete{{ model|studly }}",
+     *      summary="Delete {{ model|studly }}",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *              format="int64",
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Deleted",
+     *      ),
+     *  )
+     */
+    public function destroy(Request $request, {{ model|studly }} ${{ model|lower }})
+    {
+        $params = $request->all();
+        $this->{{ model|lower }}Service->delete($params);
+
+        return response()->success(self::DELETE);
+    }
+}

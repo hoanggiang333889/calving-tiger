@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Requests\FormRequest;
+
+class Update{{ model|studly }}Request extends FormRequest
+{
+    public function rules(): array
+    {
+{% if getId %}
+        $id = $this->route('id');
+
+{% endif %}
+        return [
+{% for name,rules in fieldRules %}
+            "{{ name }}" => "{{ rules|join('|') }}",
+{% endfor %}
+        ];
+    }
+}
